@@ -99,7 +99,7 @@ def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
     
 if __name__=='__main__':
     
-    parser = argparse.ArgumentParser(description='train NEMO model')
+    parser = argparse.ArgumentParser()
     parser.add_argument('--imageFile', type=str, default='example1.tif', help='RGB image file')
     parser.add_argument('--saveFile', type=str, default='output', help='save file')
     parser.add_argument('--Io', type=int, default=240)
