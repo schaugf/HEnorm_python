@@ -42,7 +42,6 @@ def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
     ODhat = np.array([i for i in OD if not any(i<beta)])
         
     # compute eigenvectors
-    print('solving eigen decomposition')
     eigvals, eigvecs = np.linalg.eigh(np.cov(ODhat.T))
     
     #eigvecs *= -1
@@ -78,20 +77,31 @@ def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
     
     # recreate the image using reference mixing matrix
     Inorm = np.multiply(Io, np.exp(-HERef.dot(C2)))
-    Inorm[Inorm>255] = 255
+    Inorm[Inorm>255] = 254
     Inorm = np.reshape(Inorm.T, (h, w, 3)).astype(np.uint8)  
     
+    # unmix hematoxylin and eosin
+    H = np.multiply(Io, np.exp(np.expand_dims(-HERef[:,0], axis=1).dot(np.expand_dims(C2[0,:], axis=0))))
+    H[H>255] = 254
+    H = np.reshape(H.T, (h, w, 3)).astype(np.uint8)
+    
+    E = np.multiply(Io, np.exp(np.expand_dims(-HERef[:,1], axis=1).dot(np.expand_dims(C2[1,:], axis=0))))
+    E[E>255] = 254
+    E = np.reshape(E.T, (h, w, 3)).astype(np.uint8)
+    
     if saveFile is not None:
-        Image.fromarray(Inorm).save(saveFile)
+        Image.fromarray(Inorm).save(saveFile+'.png')
+        Image.fromarray(H).save(saveFile+'_H.png')
+        Image.fromarray(E).save(saveFile+'_E.png')
 
-    return Inorm
+    return Inorm, H, E
     
     
 if __name__=='__main__':
     
     parser = argparse.ArgumentParser(description='train NEMO model')
     parser.add_argument('--imageFile', type=str, default='example1.tif', help='RGB image file')
-    parser.add_argument('--saveFile', type=str, default='output.png', help='save file')
+    parser.add_argument('--saveFile', type=str, default='output', help='save file')
     parser.add_argument('--Io', type=int, default=240)
     parser.add_argument('--alpha', type=float, default=1)
     parser.add_argument('--beta', type=float, default=0.15)
