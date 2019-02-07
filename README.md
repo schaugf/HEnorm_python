@@ -9,15 +9,13 @@ It is based on the method described in [1]. Some examples of staining normalizat
 
 ## Original Images
 
-![Original1](example1.tif | width=100)
-![Original2](example2.tif | width=100)
+<img src='example1.tif' width='40%'>
+<img src='example2.tif' width='40%'>
 
 ## Normalized Images
 
-![Norm1](norm1.png | width='100')
-![Norm2](norm2.png)
-
-<img src='norm1.png' width='40%' >
+<img src='norm2.png' width='40%'>
+<img src='norm1.png' width='40%'>
 
 [1] A method for normalizing histology slides for quantitative analysis, M Macenko, M Niethammer, JS Marron, D Borland, JT Woosley, G Xiaojun, C Schmitt, NE Thomas, IEEE ISBI, 2009. dx.doi.org/10.1109/ISBI.2009.5193250
 
