@@ -1,4 +1,4 @@
-Copyright (c) 2019, Mitko Veta(1), Geoffrey F. Schau(1)
+Copyright (c) 2019, Mitko Veta(1), Geoffrey F. Schau(2)
 1 Image Sciences Institute
 University Medical Center
 Utrecht, The Netherlands

@@ -2,7 +2,8 @@ import argparse
 import numpy as np
 from PIL import Image
 
-def normalizeStaining(args):
+
+def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
     ''' Normalize staining appearence of H&E stained images
     
     Example use:
@@ -21,9 +22,7 @@ def normalizeStaining(args):
         A method for normalizing histology slides for quantitative analysis. M.
         Macenko et al., ISBI 2009
     '''
-         
-    img = np.array(Image.open(args.imageFile))
-    
+             
     HERef = np.array([[0.5626, 0.2159],
                       [0.7201, 0.8012],
                       [0.4062, 0.5581]])
@@ -37,14 +36,16 @@ def normalizeStaining(args):
     rimg = np.reshape(img.astype(np.float), (-1,3))
     
     # calculate optical density
-    OD = -np.log((rimg+1)/args.Io)
+    OD = -np.log((rimg+1)/Io)
     
     # remove transparent pixels
-    ODhat = np.array([i for i in OD if not any(i<args.beta)])
+    ODhat = np.array([i for i in OD if not any(i<beta)])
         
-    # compute eigenvectors (inverse transpose of )
+    # compute eigenvectors
+    print('solving eigen decomposition')
     eigvals, eigvecs = np.linalg.eigh(np.cov(ODhat.T))
-    eigvecs *= -1
+    
+    #eigvecs *= -1
     
     #project on the plane spanned by the eigenvectors corresponding to the two 
     # largest eigenvalues    
@@ -52,8 +53,8 @@ def normalizeStaining(args):
     
     phi = np.arctan2(That[:,1],That[:,0])
     
-    minPhi = np.percentile(phi, args.alpha)
-    maxPhi = np.percentile(phi, 100-args.alpha)
+    minPhi = np.percentile(phi, alpha)
+    maxPhi = np.percentile(phi, 100-alpha)
     
     vMin = eigvecs[:,1:3].dot(np.array([(np.cos(minPhi), np.sin(minPhi))]).T)
     vMax = eigvecs[:,1:3].dot(np.array([(np.cos(maxPhi), np.sin(maxPhi))]).T)
@@ -69,19 +70,20 @@ def normalizeStaining(args):
     Y = np.reshape(OD, (-1, 3)).T
     
     # determine concentrations of the individual stains
-    C = np.linalg.lstsq(HE,Y)[0]
+    C = np.linalg.lstsq(HE,Y, rcond=None)[0]
     
     # normalize stain concentrations
     maxC = np.array([np.percentile(C[0,:], 99), np.percentile(C[1,:],99)])
     C2 = np.array([C[:,i]/maxC*maxCRef for i in range(C.shape[1])]).T
     
     # recreate the image using reference mixing matrix
-    
-    Inorm = np.multiply(args.Io, np.exp(-HERef.dot(C2)))
+    Inorm = np.multiply(Io, np.exp(-HERef.dot(C2)))
     Inorm[Inorm>255] = 255
-    Inorm = np.reshape(Inorm.T, (h, w, 3)).astype(np.uint8)    
-    Image.fromarray(Inorm).save(args.saveFile)
+    Inorm = np.reshape(Inorm.T, (h, w, 3)).astype(np.uint8)  
     
+    if saveFile is not None:
+        Image.fromarray(Inorm).save(saveFile)
+
     return Inorm
     
     
@@ -95,4 +97,10 @@ if __name__=='__main__':
     parser.add_argument('--beta', type=float, default=0.15)
     args = parser.parse_args()
     
-    normalizeStaining(args)
+    img = np.array(Image.open(args.imageFile))
+
+    normalizeStaining(img = img,
+                      saveFile = args.saveFile,
+                      Io = args.Io,
+                      alpha = args.alpha,
+                      beta = args.beta)
