@@ -33,13 +33,13 @@ def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
     h, w, c = img.shape
     
     # reshape image
-    rimg = np.reshape(img.astype(np.float), (-1,3))
-    
+    img = img.reshape((-1,3))
+
     # calculate optical density
-    OD = -np.log((rimg+1)/Io)
+    OD = -np.log((img.astype(np.float)+1)/Io)
     
     # remove transparent pixels
-    ODhat = np.array([i for i in OD if not any(i<beta)])
+    ODhat = OD[~np.any(OD<beta, axis=1)]
         
     # compute eigenvectors
     eigvals, eigvecs = np.linalg.eigh(np.cov(ODhat.T))
@@ -73,7 +73,8 @@ def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
     
     # normalize stain concentrations
     maxC = np.array([np.percentile(C[0,:], 99), np.percentile(C[1,:],99)])
-    C2 = np.array([C[:,i]/maxC*maxCRef for i in range(C.shape[1])]).T
+    tmp = np.divide(maxC,maxCRef)
+    C2 = np.divide(C,tmp[:, np.newaxis])
     
     # recreate the image using reference mixing matrix
     Inorm = np.multiply(Io, np.exp(-HERef.dot(C2)))
