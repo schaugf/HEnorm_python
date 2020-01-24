@@ -15,25 +15,21 @@ It is based on the method described in [1]. Some examples of staining normalizat
 
 ## Original Images
 
-<img src='imgs/example1.png' width='30%'>
-<img src='imgs/example2.png' width='30%'>
+<img src='imgs/example1.png' width='30%'> <img src='imgs/example2.png' width='30%'>
 
 ## Normalized Images
 
-<img src='imgs/norm1.png' width='30%'>
-<img src='imgs/norm2.png' width='30%'>
+<img src='imgs/norm1.png' width='30%'> <img src='imgs/norm2.png' width='30%'>
 
 ## Stain Unmixing
 
 ### Example 1
 
-<img src='imgs/norm1_H.png' width='30%'>
-<img src='imgs/norm1_E.png' width='30%'>
+<img src='imgs/norm1_H.png' width='30%'> <img src='imgs/norm1_E.png' width='30%'>
 
 ### Example 2
 
-<img src='imgs/norm2_H.png' width='30%'>
-<img src='imgs/norm2_E.png' width='30%'>
+<img src='imgs/norm2_H.png' width='30%'> <img src='imgs/norm2_E.png' width='30%'>
 
 
 
